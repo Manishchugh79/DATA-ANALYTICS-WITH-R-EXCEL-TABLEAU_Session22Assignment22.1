@@ -1,0 +1,74 @@
+Data Analytics
+
+
+
+
+                 SESSION 22:
+                  Assignment 1
+
+
+
+
+                                 1
+Data Analytics
+
+
+Table of Contents
+1.Introduction ............................................................................................................................................... 3
+2.Objective .................................................................................................................................................... 3
+3.Prerequisites .............................................................................................................................................. 3
+4.Associated Data Files ................................................................................................................................. 3
+5.Problem Statement .................................................................................................................................... 3
+6.Expected Output ........................................................................................................................................ 3
+7.Approximate Time to Complete Task ........................................................................................................ 3
+
+
+
+
+                                                                                                                                                               2
+Data Analytics
+
+
+
+
+1. Introduction
+This assignment will help you understand the concepts learnt in the session.
+
+2. Objective
+This assignment will test your skills using R.
+
+3. Prerequisites
+Not applicable.
+
+4. Associated Data Files
+Not applicable.
+
+5. Problem Statement
+   1. Use the below given data set
+
+   DataSet
+
+   2. Perform the below given activities:
+   a. apply K-means clustering to identify similar recipies
+   b. apply K-means clustering to identify similar attributes
+   c. how many unique recipies that people order often
+   d. what are their typical profiles
+
+
+
+
+                                                                               3
+Data Analytics
+
+6. Expected Output
+N/A
+
+7. Approximate Time to Complete Task
+
+30 mins.
+
+
+
+
+                                       4
+

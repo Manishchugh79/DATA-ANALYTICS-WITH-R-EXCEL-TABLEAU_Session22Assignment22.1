@@ -54,11 +54,190 @@ Not applicable.
    c. how many unique recipies that people order often
    d. what are their typical profiles
 
+Answer:
+> wine <- read.csv("D:/ACADGILD/Excel files/wine.csv")
+> View(wine)
+> install.packages("pvclust")
+> library(pvclust)
+> library(tidyverse)  # data manipulation
+> library(cluster)    # clustering algorithms
+> library(factoextra) # clustering algorithms & visualization
+> library(ggplot2)
+>
+> #reading the dataset
+> data <- read.csv("D:/ACADGILD/Excel files/wine.csv")
+> View(data)
+>
+> #structure of it
+> str(data)
+'data.frame':	178 obs. of  14 variables:
+ $ Wine                : int  1 1 1 1 1 1 1 1 1 1 ...
+ $ Alcohol             : num  14.2 13.2 13.2 14.4 13.2 ...
+ $ Malic.acid          : num  1.71 1.78 2.36 1.95 2.59 1.76 1.87 2.15 1.64 1.35 ...
+ $ Ash                 : num  2.43 2.14 2.67 2.5 2.87 2.45 2.45 2.61 2.17 2.27 ...
+ $ Acl                 : num  15.6 11.2 18.6 16.8 21 15.2 14.6 17.6 14 16 ...
+ $ Mg                  : int  127 100 101 113 118 112 96 121 97 98 ...
+ $ Phenols             : num  2.8 2.65 2.8 3.85 2.8 3.27 2.5 2.6 2.8 2.98 ...
+ $ Flavanoids          : num  3.06 2.76 3.24 3.49 2.69 3.39 2.52 2.51 2.98 3.15 ...
+ $ Nonflavanoid.phenols: num  0.28 0.26 0.3 0.24 0.39 0.34 0.3 0.31 0.29 0.22 ...
+ $ Proanth             : num  2.29 1.28 2.81 2.18 1.82 1.97 1.98 1.25 1.98 1.85 ...
+ $ Color.int           : num  5.64 4.38 5.68 7.8 4.32 6.75 5.25 5.05 5.2 7.22 ...
+ $ Hue                 : num  1.04 1.05 1.03 0.86 1.04 1.05 1.02 1.06 1.08 1.01 ...
+ $ OD                  : num  3.92 3.4 3.17 3.45 2.93 2.85 3.58 3.58 2.85 3.55 ...
+ $ Proline             : int  1065 1050 1185 1480 735 1450 1290 1295 1045 1045 ...
+>
+> # Normalization/scaling
+> df <- scale(data[,-c(1,2)])
+>
+> #finding optimal clusters for our data by looking into plot
+> wssplot <- function(data, nc=15, seed=1234){
++   wss <- (nrow(data)-1)*sum(apply(data,2,var))
++   for (i in 2:nc){
++     set.seed(seed)
++     wss[i] <- sum(kmeans(data, centers=i)$withinss)}
++   plot(1:nc, wss, type="b", xlab="Number of Clusters",
++        ylab="Within groups sum of squares")}
+
+#The data parameter is the numeric dataset to be analyzed, nc is the maximum number of clusters to consider, and seed is a random number seed of our main dataset df
+> wssplot(df)
+plot path: DATA-ANALYTICS-WITH-R-EXCEL-TABLEAU_Session22Assignment22.1/22.1a wssplot.png
+
+> library(NbClust)
+> set.seed(1234)
+> nc <- NbClust(df, min.nc=2, max.nc=15, method="kmeans")
+> nc
+> table(nc$Best.n[1,])
+> 
+> barplot(table(nc$Best.n[1,]),
++         xlab="Numer of Clusters", ylab="Number of Criteria",
++         main="Number of Clusters Chosen by 26 Criteria")
+
+#The plot above represents the variance within the clusters. 
+#It decreases as k increases, but it can be seen a bend (or "elbow") at k = 3. 
+#This bend indicates that additional clusters beyond the third have little value.
+
+> #k means
+> set.seed(1234)
+> fit.km <- kmeans(df, 3, nstart=25)
+> print(fit.km)
+K-means clustering with 3 clusters of sizes 69, 49, 60
+
+Cluster means:
+  Malic.acid        Ash        Acl          Mg    Phenols Flavanoids Nonflavanoid.phenols    Proanth   Color.int        Hue
+1 -0.3463540  0.2535871 -0.5804417  0.59547093  0.8609088  0.9191707          -0.59365958  0.6686789  0.08265601  0.4607055
+2  0.9024258  0.2485092  0.5820616 -0.05049296 -0.9857762 -1.2327174           0.71482528 -0.7474990  0.98571769 -1.1879477
+3 -0.3386740 -0.4945744  0.1921577 -0.64355565 -0.1849945 -0.0503271           0.09893454 -0.1585233 -0.90005720  0.4403459
+          OD    Proline
+1  0.7261520  0.9946499
+2 -1.2978785 -0.3789756
+3  0.2248593 -0.8343507
+
+Clustering vector:
+  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 3
+ [61] 3 3 3 3 3 1 3 3 3 1 3 3 3 1 1 3 3 3 1 3 3 3 3 2 3 3 3 3 3 3 3 3 3 3 3 1 3 3 1 3 3 3 3 3 3 3 3 3 3 1 1 3 3 3 3 3 3 3 3 3
+[121] 3 1 3 3 3 3 3 3 3 3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+
+Within cluster sum of squares by cluster:
+[1] 452.2290 282.9253 445.5945
+ (between_SS / total_SS =  44.4 %)
+
+Available components:
+
+[1] "cluster"      "centers"      "totss"        "withinss"     "tot.withinss" "betweenss"    "size"         "iter"        
+[9] "ifault"      
+> 
+
+#As the final result of k-means clustering result is sensitive to the random starting assignments, we specify nstart = 25. This means that R will try 25 different random starting assignments and then select 
+#the best results corresponding to the one with the lowest within cluster variation
+
+#The printed output displays:
+
+#the cluster means or centers: a matrix, which rows are cluster number (1 to 4) and columns are variables
+#the clustering vector: A vector of integers (from 1:k) indicating the cluster to which each point is allocated
+
+> fit.km$size
+[1] 69 49 60
+> fit.km$centers
+  Malic.acid        Ash        Acl          Mg    Phenols Flavanoids Nonflavanoid.phenols    Proanth   Color.int        Hue
+1 -0.3463540  0.2535871 -0.5804417  0.59547093  0.8609088  0.9191707          -0.59365958  0.6686789  0.08265601  0.4607055
+2  0.9024258  0.2485092  0.5820616 -0.05049296 -0.9857762 -1.2327174           0.71482528 -0.7474990  0.98571769 -1.1879477
+3 -0.3386740 -0.4945744  0.1921577 -0.64355565 -0.1849945 -0.0503271           0.09893454 -0.1585233 -0.90005720  0.4403459
+          OD    Proline
+1  0.7261520  0.9946499
+2 -1.2978785 -0.3789756
+3  0.2248593 -0.8343507
+> 
+
+#we can extract the clusters and add to our initial data to do some descriptive statistics at the cluster level:
+#to compute the mean of each variables by clusters using the original data:
+> aggregate(data[,-c(1,2)], by=list(cluster=fit.km$cluster), mean)
+  cluster Malic.acid      Ash      Acl        Mg  Phenols Flavanoids Nonflavanoid.phenols  Proanth Color.int       Hue
+1       1    1.94942 2.436087 17.55652 108.24638 2.833913  2.9473913            0.2879710 1.973623  5.249710 1.0627536
+2       2    3.34449 2.434694 21.43878  99.02041 1.678163  0.7979592            0.4508163 1.163061  7.343265 0.6859184
+3       3    1.95800 2.230833 20.13667  90.55000 2.179333  1.9790000            0.3741667 1.500167  2.971500 1.0581000
+        OD  Proline
+1 3.127246 1060.116
+2 1.690204  627.551
+3 2.771333  484.150
+> 
+
+> #same thing but new way of doing it previous aggregate things
+> data %>%
++   mutate(Cluster = fit.km$cluster) %>%
++   group_by(Cluster) %>%
++   summarise_all("mean")
+# A tibble: 3 x 15
+  Cluster  Wine Alcohol Malic.acid   Ash   Acl    Mg Phenols Flavanoids Nonflavanoid.p~ Proanth Color.int   Hue    OD Proline
+    <int> <dbl>   <dbl>      <dbl> <dbl> <dbl> <dbl>   <dbl>      <dbl>           <dbl>   <dbl>     <dbl> <dbl> <dbl>   <dbl>
+1       1  1.14    13.5       1.95  2.44  17.6 108.     2.83      2.95            0.288    1.97      5.25 1.06   3.13   1060.
+2       2  2.98    13.2       3.34  2.43  21.4  99.0    1.68      0.798           0.451    1.16      7.34 0.686  1.69    628.
+3       3  2       12.3       1.96  2.23  20.1  90.6    2.18      1.98            0.374    1.50      2.97 1.06   2.77    484.
+> 
+
+#A final cluster solution is obtained with kmeans() function and the cluster centroids are printed (#3). 
+#Since the centroids provided by the function are based on standardized data, the aggregate() function is used along with the cluster memberships to determine variable means for each cluster in the original metric.
+#to add the point classifications to the original data, use this:
+
+> dd <- cbind(data[,-c(1,2)], cluster = fit.km$cluster)
+> head(dd)
+  Malic.acid  Ash  Acl  Mg Phenols Flavanoids Nonflavanoid.phenols Proanth Color.int  Hue   OD Proline cluster
+1       1.71 2.43 15.6 127    2.80       3.06                 0.28    2.29      5.64 1.04 3.92    1065       1
+2       1.78 2.14 11.2 100    2.65       2.76                 0.26    1.28      4.38 1.05 3.40    1050       1
+3       2.36 2.67 18.6 101    2.80       3.24                 0.30    2.81      5.68 1.03 3.17    1185       1
+4       1.95 2.50 16.8 113    3.85       3.49                 0.24    2.18      7.80 0.86 3.45    1480       1
+5       2.59 2.87 21.0 118    2.80       2.69                 0.39    1.82      4.32 1.04 2.93     735       1
+6       1.76 2.45 15.2 112    3.27       3.39                 0.34    1.97      6.75 1.05 2.85    1450       1
+> 
+
+> #visualize
+> fviz_cluster(fit.km, data = df)
+
+> # Plotting Different cluster formed graphically
+> clusplot(data[,-c(1,2)],fit.km$cluster,color = TRUE)
+> 
+plot path: DATA-ANALYTICS-WITH-R-EXCEL-TABLEAU_Session22Assignment22.1/22.1b clusplot.png
+      
+> #A cross-tabulation of Type (wine varietal) and cluster membership is given by
+> ct.km <- table(data$Type, fit.km$cluster)
+> ct.km
+> k2 <- kmeans(df, centers = 2, nstart = 25)
+> k3 <- kmeans(df, centers = 3, nstart = 25)
+> k4 <- kmeans(df, centers = 4, nstart = 25)
+> k5 <- kmeans(df, centers = 5, nstart = 25)
+> 
+
+> # plots to compare
+> p1 <- fviz_cluster(k2, geom = "point", data = df) + ggtitle("k = 2")
+> p2 <- fviz_cluster(k3, geom = "point",  data = df) + ggtitle("k = 3")
+> p3 <- fviz_cluster(k4, geom = "point",  data = df) + ggtitle("k = 4")
+> p4 <- fviz_cluster(k5, geom = "point",  data = df) + ggtitle("k = 5")
+
+> library(gridExtra)
+> grid.arrange(p1, p2, p3, p4, nrow = 2)
+> 
 
 
-
-                                                                               3
-Data Analytics
+Data Analytics
 
 6. Expected Output
 N/A
